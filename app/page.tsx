@@ -5,6 +5,7 @@ import "./globals.css";
 import { getOsuMaps, getSpotifyMetadata } from "./actions";
 import { ChangeEvent, useState } from "react";
 import { Beatmapset } from "osu-web.js";
+import { Track } from "@spotify/web-api-ts-sdk";
 
 export default function Index() {
   const [inputValue, setInputValue] = useState("");
@@ -17,9 +18,10 @@ export default function Index() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the form from refreshing the page
 
-    let spotifyMetadata = await getSpotifyMetadata(inputValue);
+    if (inputValue === "") return;
+    let spotifyMetadata: Track = await getSpotifyMetadata(inputValue);
 
-    await getOsuMaps(spotifyMetadata.tracks.items[0].name)
+    await getOsuMaps(spotifyMetadata)
       .then((result) => {
         setMapsets(result);
         console.log(result);
@@ -31,12 +33,15 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-      <div className="relative py-3 sm:max-w-xl sm:mx-auto">
+      <div className="relative py-3 max-w-5xl sm:mx-auto">
         <div className="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
+          <h1 className="text-center font-semibold text-3xl lg:text-4xl text-gray-800">
+            Spotify Map Finder
+          </h1>
           <form onSubmit={handleSubmit} className="space-y-6">
             <input
               type="text"
-              placeholder="Search"
+              placeholder="Enter title or URL"
               onChange={handleInputChange}
               className="block w-full p-3 rounded bg-gray-200 border border-transparent focus:outline-none"
             />
@@ -51,11 +56,25 @@ export default function Index() {
           <h2 className="pt-8 text-2xl font-semibold">
             Results ({mapsets.length})
           </h2>
-          <ul className="space-y-2">
+          <ul className="grid grid-cols-3 gap-4">
             {mapsets.map((mapset) => (
-              <li key={mapset.id} className="border p-4 rounded bg-gray-100">
-                {mapset.artist} - {mapset.title}
-              </li>
+              <a
+                href={`https://osu.ppy.sh/beatmapsets/${mapset.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <li
+                  key={mapset.id}
+                  className="border p-4 rounded bg-gray-100 text-white shadow shadow-black w-64 "
+                  style={{
+                    backgroundImage: `url(${mapset.covers["card@2x"]})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                >
+                  {mapset.artist} - {mapset.title}
+                </li>
+              </a>
             ))}
           </ul>
         </div>

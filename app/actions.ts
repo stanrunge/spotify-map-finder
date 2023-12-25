@@ -1,6 +1,7 @@
 "use server";
 
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
+import { SpotifyApi, Track } from "@spotify/web-api-ts-sdk";
+import { SearchExecutionFunction } from "@spotify/web-api-ts-sdk/dist/mjs/endpoints/SearchEndpoints";
 import { Beatmapset, Client } from "osu-web.js";
 
 export async function getSpotifyMetadata(query: string) {
@@ -20,15 +21,15 @@ export async function getSpotifyMetadata(query: string) {
     const track = await spotifySdk.tracks.get(trackId);
 
     // Return the track data in a format that matches the search result
-    return { tracks: { items: [track] } };
+    return track;
   }
 
   const result = await spotifySdk.search(query, ["track"]);
 
-  return result;
+  return result.tracks.items[0];
 }
 
-export async function getOsuMaps(query: string) {
+export async function getOsuMaps(track: Track) {
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/x-www-form-urlencoded",
@@ -52,8 +53,12 @@ export async function getOsuMaps(query: string) {
   const osuClient = new Client(accessToken.access_token);
 
   let beatmaps: { beatmapsets: Beatmapset[] } = await osuClient.getUndocumented(
-    "/beatmapsets/search/?q=" + query
+    "/beatmapsets/search/?q=" + track.name
   );
 
-  return beatmaps.beatmapsets;
+  let filteredBeatmaps = beatmaps.beatmapsets.filter(
+    (mapset) => mapset.title === track.name
+  );
+
+  return filteredBeatmaps;
 }
