@@ -2,7 +2,6 @@
 
 import { SpotifyApi, Track } from "@spotify/web-api-ts-sdk";
 import { SearchExecutionFunction } from "@spotify/web-api-ts-sdk/dist/mjs/endpoints/SearchEndpoints";
-import { Beatmapset, Client } from "osu-web.js";
 
 export async function getSpotifyMetadata(query: string) {
   if (!process.env.SPOTIFY_CLIENT_ID || !process.env.SPOTIFY_CLIENT_SECRET)
@@ -20,11 +19,8 @@ export async function getSpotifyMetadata(query: string) {
       .split("https://open.spotify.com/track/")[1]
       .split("?")[0];
 
-    // Get the track data
-    const track = await spotifySdk.tracks.get(trackId);
-
-    // Return the track data in a format that matches the search result
-    return track;
+    // Get and return the track data in a format that matches the search result
+    return await spotifySdk.tracks.get(trackId);
   }
 
   const result = await spotifySdk.search(query, ["track"]);
@@ -33,34 +29,8 @@ export async function getSpotifyMetadata(query: string) {
 }
 
 export async function getOsuMaps(track: Track) {
-  const headers = {
-    Accept: "application/json",
-    "Content-Type": "application/x-www-form-urlencoded",
-  };
+  const beatmapRequest = await fetch(`https://catboy.best/api/v2/search?q=${track.name}`)
+  const beatmaps = await beatmapRequest.json()
 
-  const body = `client_id=${process.env.OSU_CLIENT_ID}&client_secret=${process.env.OSU_CLIENT_SECRET}&grant_type=client_credentials&scope=public`;
-
-  let accessTokenResponse = await fetch("https://osu.ppy.sh/oauth/token", {
-    method: "POST",
-    headers,
-    body: body,
-  });
-
-  let accessToken: {
-    token_type: string;
-    expires_in: number;
-    access_token: string;
-  } = await accessTokenResponse.json();
-
-  const osuClient = new Client(accessToken.access_token);
-
-  let beatmaps: { beatmapsets: Beatmapset[] } = await osuClient.getUndocumented(
-    "/beatmapsets/search/?q=" + track.name
-  );
-
-  let filteredBeatmaps = beatmaps.beatmapsets.filter(
-    (mapset) => mapset.title === track.name
-  );
-
-  return filteredBeatmaps;
+  return beatmaps.filter((mapset) => mapset.title === track.name);
 }
