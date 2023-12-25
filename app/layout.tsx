@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/react";
+
 export const metadata = {
   title: "Spotify Map Finder",
   description: "Find osu! maps from Spotify songs",
@@ -10,7 +12,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
