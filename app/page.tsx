@@ -4,7 +4,7 @@ import "./globals.css";
 
 import { Track } from "@spotify/web-api-ts-sdk";
 import { Beatmapset } from "osu-web.js";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { getOsuMaps, getSpotifyMetadata } from "./actions";
 import { Icon } from "@iconify/react";
 
@@ -69,6 +69,22 @@ export default function Index({ params }: { params: { code: string } }) {
             <h1 className="text-center font-semibold text-3xl lg:text-4xl text-gray-800">
               Spotify Map Finder
             </h1>
+            <div className="flex space-x-4 py-4">
+              <button
+                onClick={handleOsuLogin}
+                className="block flex-1 p-3 rounded bg-pink-500 text-white font-bold"
+              >
+                Login with osu!
+              </button>
+              {spotifyAuthCode === "" && (
+                <button
+                  onClick={handleSpotifyLogin}
+                  className="block flex-1 p-3 rounded bg-green-500 text-white font-bold"
+                >
+                  Login with Spotify
+                </button>
+              )}
+            </div>
             <form onSubmit={handleSubmit} className="space-y-6">
               <input
                 type="text"
