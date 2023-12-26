@@ -2,15 +2,16 @@
 
 import "./globals.css";
 
-import { getOsuMaps, getSpotifyMetadata } from "./actions";
-import { ChangeEvent, useState } from "react";
-import { Beatmapset } from "osu-web.js";
 import { Track } from "@spotify/web-api-ts-sdk";
+import { Beatmapset } from "osu-web.js";
+import { ChangeEvent, useState } from "react";
+import { getOsuMaps, getSpotifyMetadata } from "./actions";
 import { Icon } from "@iconify/react";
 
-export default function Index() {
+export default function Index({ params }: { params: { code: string } }) {
   const [inputValue, setInputValue] = useState("");
   const [mapsets, setMapsets] = useState<Beatmapset[]>([]);
+  const [spotifyAuthCode, setSpotifyAuthCode] = useState<string>("");
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -30,6 +31,30 @@ export default function Index() {
       .catch((error) => {
         console.error("Error fetching osu mapsets:", error);
       });
+  };
+
+  const handleSpotifyLogin = () => {
+    const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID!;
+    const redirectUri = encodeURIComponent(
+      "http://localhost:3000/auth/spotify"
+    );
+    const scopes = encodeURIComponent("user-read-private user-read-email"); // replace with your actual scopes
+
+    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scopes}`;
+
+    // Redirect the user to the Spotify authorization page
+    window.location.href = authUrl;
+  };
+
+  const handleOsuLogin = () => {
+    const clientId = process.env.NEXT_PUBLIC_OSU_CLIENT_ID!;
+    const redirectUri = encodeURIComponent("http://localhost:3000/auth/osu");
+    const scopes = encodeURIComponent("public");
+
+    const authUrl = `https://osu.ppy.sh/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scopes}`;
+
+    // Redirect the user to the osu! authorization page
+    window.location.href = authUrl;
   };
 
   return (
