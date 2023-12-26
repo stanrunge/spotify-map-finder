@@ -1,23 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { setCookies } from "@/app/actions";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function OsuAuthPage({
   searchParams,
 }: {
   searchParams: { code: string };
 }) {
-  const [osuAuthCode, setOsuAuthCode] = useState<string>();
-
   const router = useRouter();
 
   useEffect(() => {
-    setOsuAuthCode(searchParams.code);
+    setCookies("osuAuthCode", searchParams.code);
+
     router.push("/");
   }, []);
 
-  useEffect(() => {
-    console.log(osuAuthCode);
-  }, [osuAuthCode]);
+  return <></>;
 }

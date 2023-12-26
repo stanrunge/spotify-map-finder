@@ -3,6 +3,7 @@
 import { SpotifyApi, Track } from "@spotify/web-api-ts-sdk";
 import { SearchExecutionFunction } from "@spotify/web-api-ts-sdk/dist/mjs/endpoints/SearchEndpoints";
 import { Beatmapset, Client } from "osu-web.js";
+import { cookies } from "next/headers";
 
 export async function getSpotifyMetadata(query: string) {
   if (
@@ -66,4 +67,8 @@ export async function getOsuMaps(track: Track) {
   );
 
   return filteredBeatmaps;
+}
+
+export async function setCookies(key: string, value: string) {
+  cookies().set(key, value);
 }
