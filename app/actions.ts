@@ -5,11 +5,14 @@ import { SearchExecutionFunction } from "@spotify/web-api-ts-sdk/dist/mjs/endpoi
 import { Beatmapset, Client } from "osu-web.js";
 
 export async function getSpotifyMetadata(query: string) {
-  if (!process.env.SPOTIFY_CLIENT_ID || !process.env.SPOTIFY_CLIENT_SECRET)
+  if (
+    !process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID ||
+    !process.env.SPOTIFY_CLIENT_SECRET
+  )
     throw new Error("Missing Spotify client ID or secret");
 
   const spotifySdk = SpotifyApi.withClientCredentials(
-    process.env.SPOTIFY_CLIENT_ID,
+    process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
     process.env.SPOTIFY_CLIENT_SECRET
   );
 
@@ -38,7 +41,7 @@ export async function getOsuMaps(track: Track) {
     "Content-Type": "application/x-www-form-urlencoded",
   };
 
-  const body = `client_id=${process.env.OSU_CLIENT_ID}&client_secret=${process.env.OSU_CLIENT_SECRET}&grant_type=client_credentials&scope=public`;
+  const body = `client_id=${process.env.NEXT_PUBLIC_OSU_CLIENT_ID}&client_secret=${process.env.OSU_CLIENT_SECRET}&grant_type=client_credentials&scope=public`;
 
   let accessTokenResponse = await fetch("https://osu.ppy.sh/oauth/token", {
     method: "POST",
