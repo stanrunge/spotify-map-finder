@@ -39,6 +39,14 @@ export default function LoginButton(props: any) {
     router.push(authUrl);
   }
 
+  function isDisabled() {
+    // Check if cookie osuAuthCode or spotifyAuthCode exists
+    const osuAuthCode = document.cookie.includes("osuAuthCode");
+    const spotifyAuthCode = document.cookie.includes("spotifyAuthCode");
+
+    return osuAuthCode || spotifyAuthCode;
+  }
+
   const serviceData = getData(props.service);
 
   return (
@@ -48,9 +56,9 @@ export default function LoginButton(props: any) {
         className={`block flex-1 p-3 rounded ${
           serviceData.color
         } text-white font-bold ${
-          props.disabled ? "opacity-50 cursor-not-allowed" : ""
+          isDisabled() ? "opacity-50 cursor-not-allowed" : ""
         }`}
-        disabled={props.disabled}
+        disabled={isDisabled()}
       >
         Login with {serviceData.name}
       </button>

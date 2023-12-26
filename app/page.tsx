@@ -2,8 +2,6 @@ import "./globals.css";
 
 import Icons from "@/components/Icons";
 import SearchField from "@/components/SearchField";
-import { setCookies } from "./actions";
-import { usePathname } from "next/navigation";
 
 export default function Index({
   searchParams,
