@@ -12,24 +12,20 @@ export default function Index() {
   const [inputValue, setInputValue] = useState("");
   const [mapsets, setMapsets] = useState<Beatmapset[]>([]);
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => setInputValue(event.target.value);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the form from refreshing the page
 
     if (inputValue === "") return;
-    let spotifyMetadata: Track = await getSpotifyMetadata(inputValue);
-
-    await getOsuMaps(spotifyMetadata)
-      .then((result) => {
-        setMapsets(result);
-        console.log(result);
-      })
-      .catch((error) => {
-        console.error("Error fetching osu mapsets:", error);
-      });
+    const spotifyMetadata: Track = await getSpotifyMetadata(inputValue);
+    try { //? i'm not sure about this one ~ Nanoo
+      const result = await getOsuMaps(spotifyMetadata)
+      setMapsets(result)
+      console.log(result)
+    } catch (err) {
+      console.error("Error fetching osu mapsets:", err);
+    }
   };
 
   return (
