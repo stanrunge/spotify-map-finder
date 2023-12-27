@@ -20,6 +20,13 @@ export default function Icons() {
         >
           <Icon icon="iconoir:x" height={32} />
         </a>
+        <a
+          href="https://discord.gg/n3mZgWk"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon icon="ic:baseline-discord" height={32} />
+        </a>
       </div>
     </>
   );
