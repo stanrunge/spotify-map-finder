@@ -1,66 +1,48 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { env } from "process";
 
-export default function LoginButton(props: any) {
+export default function LoginButton(props: {
+  service: {
+    color: string;
+    name: string;
+    url: string;
+    scopes: string;
+    clientId: string;
+    cookieName: string;
+    callbackName: string;
+  };
+}) {
   const router = useRouter();
 
-  function getData(service: string) {
-    if (service == "osu") {
-      return {
-        color: "bg-pink-500",
-        name: "osu!",
-        url: "https://osu.ppy.sh/oauth/authorize",
-        scopes: "public",
-        envVar: process.env.NEXT_PUBLIC_OSU_CLIENT_ID,
-      };
-    } else {
-      return {
-        color: "bg-green-500",
-        name: "Spotify",
-        url: "https://accounts.spotify.com/authorize",
-        scopes: "user-read-private user-read-email",
-        envVar: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
-      };
-    }
-  }
-
   function handleLogin() {
-    const clientId = serviceData.envVar!;
     const redirectUri = encodeURIComponent(
-      `http://localhost:3000/auth/${props.service}`
+      `http://localhost:3000/auth/${props.service.callbackName}`
     );
-    const scopes = encodeURIComponent(serviceData.scopes); // replace with your actual scopes
+    const scopes = encodeURIComponent(props.service.scopes); // replace with your actual scopes
 
-    const authUrl = `${serviceData.url}?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scopes}`;
+    const authUrl = `${props.service.url}?client_id=${props.service.clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scopes}`;
 
     // Redirect the user to the Spotify authorization page
     router.push(authUrl);
   }
 
   function isDisabled() {
-    // Check if cookie osuAuthCode or spotifyAuthCode exists
-    const osuAuthCode = document.cookie.includes("osuAuthCode");
-    const spotifyAuthCode = document.cookie.includes("spotifyAuthCode");
-
-    return osuAuthCode || spotifyAuthCode;
+    return window.document.cookie.includes(props.service.cookieName);
   }
-
-  const serviceData = getData(props.service);
 
   return (
     <>
       <button
         onClick={handleLogin}
         className={`block flex-1 p-3 rounded ${
-          serviceData.color
+          props.service.color
         } text-white font-bold ${
           isDisabled() ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={isDisabled()}
       >
-        Login with {serviceData.name}
+        Login with {props.service.name}
       </button>
     </>
   );

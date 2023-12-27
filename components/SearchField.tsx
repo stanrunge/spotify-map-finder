@@ -30,6 +30,26 @@ export default function SearchField(props: any) {
       });
   };
 
+  const osuLoginButtonData = {
+    color: "bg-pink-500",
+    name: "osu!",
+    url: "https://osu.ppy.sh/oauth/authorize",
+    scopes: "identify",
+    clientId: process.env.NEXT_PUBLIC_OSU_CLIENT_ID!,
+    cookieName: "osuAuthCode",
+    callbackName: "osu",
+  };
+
+  const spotifyLoginButtonData = {
+    color: "bg-green-500",
+    name: "Spotify",
+    url: "https://accounts.spotify.com/authorize",
+    scopes: "user-read-currently-playing",
+    clientId: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID!,
+    cookieName: "spotifyAuthCode",
+    callbackName: "spotify",
+  };
+
   return (
     <>
       <div className="relative py-3 max-w-5xl sm:mx-auto">
@@ -38,8 +58,8 @@ export default function SearchField(props: any) {
             Spotify Map Finder
           </h1>
           <div className="flex space-x-4 py-4">
-            <LoginButton service="osu" />
-            <LoginButton service="spotify" />
+            <LoginButton service={osuLoginButtonData} />
+            <LoginButton service={spotifyLoginButtonData} />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

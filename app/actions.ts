@@ -72,3 +72,7 @@ export async function getOsuMaps(track: Track) {
 export async function setCookies(key: string, value: string) {
   cookies().set(key, value);
 }
+
+export async function getCookie(key: string) {
+  return cookies().get(key);
+}
