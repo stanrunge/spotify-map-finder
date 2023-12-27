@@ -1,6 +1,8 @@
 "use client";
 
+import { getCookie } from "@/app/actions";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function LoginButton(props: {
   service: {
@@ -13,6 +15,8 @@ export default function LoginButton(props: {
     callbackName: string;
   };
 }) {
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+
   const router = useRouter();
 
   function handleLogin() {
@@ -27,9 +31,15 @@ export default function LoginButton(props: {
     router.push(authUrl);
   }
 
-  function isDisabled() {
-    return window.document.cookie.includes(props.service.cookieName);
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      if (await getCookie(props.service.cookieName)) {
+        setIsDisabled(true);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -38,9 +48,9 @@ export default function LoginButton(props: {
         className={`block flex-1 p-3 rounded ${
           props.service.color
         } text-white font-bold ${
-          isDisabled() ? "opacity-50 cursor-not-allowed" : ""
+          isDisabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
-        disabled={isDisabled()}
+        disabled={isDisabled}
       >
         Login with {props.service.name}
       </button>
